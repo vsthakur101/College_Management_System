@@ -1,7 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const adminRouter = require("../routes/staff/adminRouter");
-const { globalErrorHandler, notFound } = require("../middlewares/middleware");
+const { globalErrorHandler, notFound } = require("../middlewares/globalErrHandler");
 
 const app = express();
 

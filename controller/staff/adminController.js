@@ -1,5 +1,7 @@
 const AsyncHandler = require("express-async-handler");
 const Admin = require("../../models/Staff/Admin");
+const genrateWebToken = require("../../utils/genrateToken");
+
 const registerAdminCtrl = AsyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
   //Check If Admin Already Exist
@@ -26,7 +28,8 @@ const loginAdminCtrl = AsyncHandler(async (req, res) => {
     return res.json({ message: "User not found." });
   }
   if (user && (await user.verifyPassword(password))) {
-    return res.json({ data: user });
+    req.userAuth = user;
+    return res.json({ data: user, access_token: genrateWebToken(user._id) });
   } else {
     return res.json({ message: "Invalid login credentials." });
   }
