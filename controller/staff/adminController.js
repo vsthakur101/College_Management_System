@@ -1,75 +1,48 @@
+const AsyncHandler = require("express-async-handler");
 const Admin = require("../../models/Staff/Admin");
-const registerAdminCtrl = async (req, res) => {
+const registerAdminCtrl = AsyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
-  try {
-    //Check If Admin Already Exist
-    const adminFound = await Admin.findOne({ email });
-    if (adminFound) {
-      return res.json("Admin Exist");
-    }
-
-    const user = await Admin.create({
-      name,
-      email,
-      password,
-    });
-
-    res.status(201).json({
-      status: "success",
-      data: user,
-    });
-  } catch (error) {
-    res.json({
-      status: "failed",
-      error: error.message,
-    });
+  //Check If Admin Already Exist
+  const adminFound = await Admin.findOne({ email });
+  if (adminFound) {
+    return res.json("Admin Exist");
   }
-};
-const loginAdminCtrl = async (req, res) => {
+
+  const user = await Admin.create({
+    name,
+    email,
+    password,
+  });
+
+  res.status(201).json({
+    status: "success",
+    data: user,
+  });
+});
+const loginAdminCtrl = AsyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  try {
-    const user = await Admin.findOne({ email });
-    if (!user) {
-      return res.json({ message: "User not found." });
-    }
-    if (user && await user.verifyPassword(password)) {
-      return res.json({ data: user });
-    } else {
-      return res.json({ message: "Invalid login credentials." });
-    }
-  } catch (error) {
-    res.json({
-      status: "failed",
-      error: error.message,
-    });
+  const user = await Admin.findOne({ email });
+  if (!user) {
+    return res.json({ message: "User not found." });
   }
-};
-const getAllAdminCtrl = (req, res) => {
-  try {
-    res.status(201).json({
-      status: "success",
-      data: "All Admins",
-    });
-  } catch (error) {
-    res.json({
-      status: "failed",
-      error: error.message,
-    });
+  if (user && (await user.verifyPassword(password))) {
+    return res.json({ data: user });
+  } else {
+    return res.json({ message: "Invalid login credentials." });
   }
-};
-const getSingleAdminCtrl = (req, res) => {
-  try {
-    res.status(201).json({
-      status: "success",
-      data: "Single Admin",
-    });
-  } catch (error) {
-    res.json({
-      status: "failed",
-      error: error.message,
-    });
-  }
-};
+});
+const getAllAdminCtrl = AsyncHandler((req, res) => {
+  res.status(201).json({
+    status: "success",
+    data: "All Admins",
+  });
+});
+const getSingleAdminCtrl = AsyncHandler((req, res) => {
+  res.status(201).json({
+    status: "success",
+    data: "Single Admin",
+  });
+});
 const updateSingleAdminCtrl = (req, res) => {
   try {
     res.status(201).json({
