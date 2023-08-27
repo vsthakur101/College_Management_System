@@ -1,6 +1,7 @@
 const AsyncHandler = require("express-async-handler");
 const Admin = require("../../models/Staff/Admin");
 const genrateWebToken = require("../../utils/genrateToken");
+const verifyToken = require("../../utils/verifyToken");
 
 const registerAdminCtrl = AsyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
@@ -19,6 +20,7 @@ const registerAdminCtrl = AsyncHandler(async (req, res) => {
   res.status(201).json({
     status: "success",
     data: user,
+    message: "Admin Registered Successfully.",
   });
 });
 const loginAdminCtrl = AsyncHandler(async (req, res) => {
@@ -28,23 +30,36 @@ const loginAdminCtrl = AsyncHandler(async (req, res) => {
     return res.json({ message: "User not found." });
   }
   if (user && (await user.verifyPassword(password))) {
-    req.userAuth = user;
-    return res.json({ data: user, access_token: genrateWebToken(user._id) });
+    return res.json({
+      access_token: genrateWebToken(user._id),
+      message: "Admin Logged In Successfully.",
+    });
   } else {
     return res.json({ message: "Invalid login credentials." });
   }
 });
-const getAllAdminCtrl = AsyncHandler((req, res) => {
+const getAllAdminCtrl = AsyncHandler(async (req, res) => {
+  const admins = await Admin.find();
   res.status(201).json({
     status: "success",
-    data: "All Admins",
+    message: 'Admins fetched successfully.',
+    data: admins,
   });
 });
-const getSingleAdminCtrl = AsyncHandler((req, res) => {
-  res.status(201).json({
-    status: "success",
-    data: "Single Admin",
-  });
+const getSingleAdminCtrl = AsyncHandler(async (req, res) => {
+  const { userAuth = null } = req;
+  const admin = await Admin.findById(userAuth._id).select(
+    "-password -createdAt -updatedAt"
+  );
+  if (admin) {
+    res.status(200).json({
+      status: "success",
+      data: admin,
+      message: "Admin Fetched Successfully.",
+    });
+  } else {
+    throw new Error("Admin Not Found.");
+  }
 });
 const updateSingleAdminCtrl = (req, res) => {
   try {
