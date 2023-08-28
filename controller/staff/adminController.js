@@ -1,7 +1,8 @@
 const AsyncHandler = require("express-async-handler");
 const Admin = require("../../models/Staff/Admin");
 const genrateWebToken = require("../../utils/genrateToken");
-const verifyToken = require("../../utils/verifyToken");
+const hashedPassword = require("../../utils/hashPassword");
+const verifyPassword = require("../../utils/verifyPassword");
 
 const registerAdminCtrl = AsyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
@@ -11,10 +12,12 @@ const registerAdminCtrl = AsyncHandler(async (req, res) => {
     return res.json("Admin Exist");
   }
 
+  const Passwordhash = await hashedPassword(password);
+
   const user = await Admin.create({
     name,
     email,
-    password,
+    password: Passwordhash,
   });
 
   res.status(201).json({
@@ -29,20 +32,21 @@ const loginAdminCtrl = AsyncHandler(async (req, res) => {
   if (!user) {
     return res.json({ message: "User not found." });
   }
-  if (user && (await user.verifyPassword(password))) {
+  const isMatched = await verifyPassword(password, user.password);
+  if (!isMatched) {
+    return res.json({ message: "Invalid login credentials." });
+  } else {
     return res.json({
       access_token: genrateWebToken(user._id),
       message: "Admin Logged In Successfully.",
     });
-  } else {
-    return res.json({ message: "Invalid login credentials." });
   }
 });
 const getAllAdminCtrl = AsyncHandler(async (req, res) => {
   const admins = await Admin.find();
   res.status(201).json({
     status: "success",
-    message: 'Admins fetched successfully.',
+    message: "Admins fetched successfully.",
     data: admins,
   });
 });
@@ -61,19 +65,25 @@ const getSingleAdminCtrl = AsyncHandler(async (req, res) => {
     throw new Error("Admin Not Found.");
   }
 });
-const updateSingleAdminCtrl = (req, res) => {
-  try {
-    res.status(201).json({
-      status: "success",
-      data: "Update Admin",
+const updateSingleAdminCtrl = AsyncHandler(async (req, res) => {
+  const { email, name, password } = req.body;
+  const emailExist = await Admin.findOne({ email });
+  if (emailExist) {
+    throw new Error("This Email is already taken.");
+  } else {
+    let passwordHash = await hashedPassword(password);
+    let admin = await Admin.findByIdAndUpdate(req.userAuth._id, {
+      email,
+      password: passwordHash,
+      name,
     });
-  } catch (error) {
-    res.json({
-      status: "failed",
-      error: error.message,
+    res.status(200).json({
+      status: "success",
+      data: admin,
+      message: "Admin updated successfully.",
     });
   }
-};
+});
 const deleteAdminCtrl = (req, res) => {
   try {
     res.status(201).json({

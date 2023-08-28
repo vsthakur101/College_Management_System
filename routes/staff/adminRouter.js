@@ -25,10 +25,10 @@ adminRouter.post("/login", loginAdminCtrl);
 adminRouter.get("/getAllAdmin", isLogin, getAllAdminCtrl);
 
 //========Get Single Admin==========
-adminRouter.get("/getSingle", isLogin,isAdmin,  getSingleAdminCtrl);
+adminRouter.get("/getSingle", isLogin, isAdmin, getSingleAdminCtrl);
 
 //========Update Admin==========
-adminRouter.put("/updateAdmin/:id", updateSingleAdminCtrl);
+adminRouter.put("/updateAdmin", isLogin, isAdmin, updateSingleAdminCtrl);
 
 //========Delete Admin==========
 adminRouter.delete("/deleteAdmin/:id", deleteAdminCtrl);
