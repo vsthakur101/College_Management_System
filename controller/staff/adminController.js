@@ -54,7 +54,7 @@ const getSingleAdminCtrl = AsyncHandler(async (req, res) => {
   const { userAuth = null } = req;
   const admin = await Admin.findById(userAuth._id).select(
     "-password -createdAt -updatedAt"
-  );
+  ).populate('academicYears');
   if (admin) {
     res.status(200).json({
       status: "success",
