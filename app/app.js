@@ -7,6 +7,8 @@ const academicTermRouter = require("../routes/academic/academicTerm");
 const ClassLevelRouter = require("../routes/academic/ClassLevel");
 const ProgramRouter = require("../routes/academic/program");
 const SubjectRouter = require("../routes/academic/subject");
+const yearGroupsRouter = require("../routes/academic/yearGroups");
+const teacherRouter = require("../routes/staff/teachers");
 
 
 
@@ -18,14 +20,18 @@ app.use(express.json()); //Parse Req Data
 
 //==========Routes============
 
-//==========Admin============
+    //==========Admin============
 app.use("/api/v1/admin", adminRouter);
 
 app.use('/api/v1/academicYear',academicYearRouter)
+app.use('/api/v1/yearGroup',yearGroupsRouter)
 app.use('/api/v1/academicTerm',academicTermRouter)
 app.use('/api/v1/classLevel',ClassLevelRouter)
 app.use('/api/v1/program',ProgramRouter)
 app.use('/api/v1/subject',SubjectRouter)
+app.use('/api/v1/teacher',teacherRouter);
+
+
 
 
 

@@ -76,6 +76,9 @@ const updateSingleAdminCtrl = AsyncHandler(async (req, res) => {
       email,
       password: passwordHash,
       name,
+    },{
+      new: true,
+      runValidators: true
     });
     res.status(200).json({
       status: "success",
