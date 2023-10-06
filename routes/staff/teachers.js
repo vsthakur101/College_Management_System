@@ -5,7 +5,8 @@ const {
   getAllTeachersAdmin,
   getSingleTeacherAdmin,
   getTeacherProfile,
-  updateTeacherProfile
+  updateTeacherProfile,
+  updateTeacherProfileByAdmin
 } = require("../../controller/staff/teachersCtrl");
 const isLogin = require("../../middlewares/isLoggedin");
 const isAdmin = require("../../middlewares/isAdmin");
@@ -22,6 +23,8 @@ teacherRouter.get('/',isLogin, isAdmin,  getAllTeachersAdmin);
 teacherRouter.get('/profile',isTeacherLogin, isTeacher,  getTeacherProfile);
 teacherRouter.get('/:teacherID',isLogin, isAdmin,  getSingleTeacherAdmin);
 teacherRouter.put('/:teacherID/updateProfile',isTeacherLogin, isTeacher,  updateTeacherProfile);
+teacherRouter.get('/:teacherID/updateProfile/admin',isLogin, isAdmin,  updateTeacherProfileByAdmin);
+
 
 
 

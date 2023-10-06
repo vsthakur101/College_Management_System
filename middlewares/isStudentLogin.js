@@ -1,9 +1,9 @@
-const Teacher = require("../models/Staff/Teacher");
+const Student = require("../models/Academic/Student");
 const verifyToken = require("../utils/verifyToken");
-const isStudentLogin = async (req, res, next) => {
+const isTeacherLogin = async (req, res, next) => {
   //Get Token From Header
   const { authorization = null } = req.headers;
-  let isVerified = false;
+  
   //Verify Token
   if (authorization) {
     let verify = verifyToken(
@@ -14,7 +14,7 @@ const isStudentLogin = async (req, res, next) => {
     //Return Is Verified
     if (verify) {
       //Find the user with current id from token
-      let user = await Teacher.findById(verify.id).select('name email role')
+      let user = await Student.findById(verify.id).select('name email role')
       //Save the user into req
       req.userAuth = user;
       next()
@@ -28,4 +28,4 @@ const isStudentLogin = async (req, res, next) => {
   }
 };
 
-module.exports = isStudentLogin;
+module.exports = isTeacherLogin;
